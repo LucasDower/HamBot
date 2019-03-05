@@ -2,32 +2,53 @@ import java.util.ArrayList;
 
 public class ShittyText {
 
+    private static ArrayList<WordFollowers> words = new ArrayList<WordFollowers>();
+
+    private static void addWord(String word, String follower) {
+        for (WordFollowers existing : words) {
+            if (existing.word.equals(word)) {
+                existing.addFollower(follower);
+                return;
+            }
+        }
+        words.add(new WordFollowers(word, follower));
+    }
+
+    private static WordFollowers findWF(String word) {
+        for (int i = 0; i < words.size(); i++) {
+            WordFollowers wf = words.get(i);
+            if (wf.word.equals(word)) {
+                return wf;
+            }
+        }
+        return null;
+    }
+
+    private static String generateText(int wordCap) {
+        // Get random starting word
+        int rand = (int) Math.floor(Math.random() * words.size());
+        WordFollowers wf = words.get(rand);
+        String word = wf.word;
+
+        String sentence = word;
+        while (wordCap > 0) {
+            String newFollower = wf.getWRandomFollower();
+            wf = findWF(newFollower);
+            if (wf == null) {
+                break;
+            }
+            sentence += " " + newFollower;
+            wordCap--;
+        }
+        return sentence;
+    }
+
     public static void main(String[] args) {
-
-        ArrayList<WordFollowers> words = new ArrayList<WordFollowers>();
-        String[] data = args.toLowerCase().split(" ");
-        //String input = "Hello my name is lucas and cake is my favourite food is my";
-        //String[] data = input.toLowerCase().split(" ");
-
-        for (int i = 0; i < data.length-1; i++) {
-            String word = data[i];
-            String follower = data[i+1];
-            boolean added = false;
-            for (WordFollowers existing : words) {
-                if (existing.word.equals(word)) {
-                    existing.addFollower(word);
-                    added = true;
-                    break;
-                }
-            }
-            if (!added) {
-                words.add(new WordFollowers(word, follower));
-            }
+        for (int i = 0; i < args.length-1; i++) {
+            addWord(args[i], args[i+1]);
         }
 
-        for (int j = 0; j < words.size(); j++) {
-            System.out.println(words.get(j).toString());
-        }
+        System.out.println(generateText(10));
     }
 
 }
