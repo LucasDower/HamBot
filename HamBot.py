@@ -26,14 +26,6 @@ async def on_message(message):
     args = message.content.split(" ")
     command = args[0][len(command_prefix):]
 
-    if command == 'magic8ball':
-        await message.channel.send("```md\nGo fuck yourself.```")
-        return
-
-    if command == 'flipacoin':
-        await message.channel.send("```md\nNo.```")
-        return
-
     if command == 'shittytext':
         argument = ' '.join(args[1:len(args)])
         if re.compile(r'[^a-zA-Z 0-9]+').search(argument) or argument == '':
