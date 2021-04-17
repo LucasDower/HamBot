@@ -223,7 +223,7 @@ if __name__ == '__main__':
 
     #atexit.register(exit_handler)
     config = configparser.ConfigParser()
-    config.read('.config')
+    config.read('hambot.config')
     assert "BOT_TOKEN" in config['HamBot']
 
     #assert "HAMBOT_TOKEN" in os.environ
