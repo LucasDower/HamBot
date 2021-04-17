@@ -7,6 +7,8 @@ import re
 import pickle
 import atexit
 import requests
+import configparser
+
 from hambot_util import get_embed, get_sentiment_score
 from discord.ext import commands
 from pass_the_word import PassTheWord
@@ -37,9 +39,10 @@ bot = commands.Bot(command_prefix='::',
 
 
 def exit_handler():
-    print("Updating friends.txt")
-    with open("./resources/friends.txt", "wb") as wf:
-        pickle.dump(friends, wf)
+    pass
+    #print("Updating friends.txt")
+    #with open("./resources/friends.txt", "wb") as wf:
+    #    pickle.dump(friends, wf)
 
 
 @bot.listen()
@@ -49,6 +52,8 @@ async def on_ready():
 
 @bot.listen()
 async def on_member_update(before, after):
+    return
+
     if not (before.status == discord.Status.offline and after.status == discord.Status.online):
         return
 
@@ -123,7 +128,7 @@ async def squeak(ctx):
 
 
 
-@bot.command()
+@bot.command(enabled=False)
 @commands.cooldown(1, 15, commands.BucketType.user)
 async def add_meme(ctx, link):
     if not re.search("^https://discord.com/channels/[0-9]{18}/[0-9]{18}/[0-9]{18}$", link):
@@ -137,7 +142,7 @@ async def add_meme(ctx, link):
             await ctx.message.add_reaction(emojis['thumbsup'])
 
 
-@bot.command(enabled=False)
+@bot.command(enabled=True)
 @commands.cooldown(1, 1800, commands.BucketType.guild)
 async def random_kick(ctx):
     members_in_voice = []
@@ -151,7 +156,7 @@ async def random_kick(ctx):
 
 
 
-@bot.command()
+@bot.command(enabled=False)
 async def top_trumps(ctx, *args):
     global trump_game, trump_join_message
     if len(args) == 0:
@@ -167,7 +172,7 @@ async def top_trumps(ctx, *args):
             await ctx.send(embed=get_embed("Let Lucas know he's fucked up.", discord.Colour.red()))
 
 
-@bot.command(name='continue')
+@bot.command(name='continue', enabled=False)
 async def continue_trump(ctx, category):
     global trump_game
     if trump_game == None:
@@ -211,15 +216,16 @@ async def chain(ctx, word):
     await pass_the_word_game.received_new_word(ctx, word)
 
 
-
-
 if __name__ == '__main__':
-    with open("./resources/friends.txt", "rb") as rf:
-        friends = pickle.load(rf)
-        print(f"I have [{len(friends)}] friends")
+    #with open("./resources/friends.txt", "rb") as rf:
+    #    friends = pickle.load(rf)
+    #    print(f"I have [{len(friends)}] friends")
 
-    atexit.register(exit_handler)
+    #atexit.register(exit_handler)
+    config = configparser.ConfigParser()
+    config.read('.config')
+    assert "BOT_TOKEN" in config['HamBot']
 
-    assert "HAMBOT_TOKEN" in os.environ
-    bot.run(os.environ["HAMBOT_TOKEN"])
+    #assert "HAMBOT_TOKEN" in os.environ
+    bot.run(config['HamBot']["BOT_TOKEN"])
 
